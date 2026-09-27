@@ -1,24 +1,51 @@
-### Переменные окружения
 @baseUrl = http://localhost:3000
-@fileDirectory = /home/vez/work/calm-wiki/raw/images
+@fixtures = ../test/fixtures
 
-### Загрузка нескольких скриншотов (до 10 файлов за раз)
+---
+
+### 1. Загрузка ОДНОГО файла (для отладки)
 POST {{baseUrl}}/api/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="images"; filename="2026-09-25_github-174977-fintech-response-handler.png"
+Content-Disposition: form-data; name="images"; filename="github-repo.png"
 Content-Type: image/png
 
-< {{fileDirectory}}/2026-09-25_github-174977-fintech-response-handler.png
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="images"; filename="2026-09-25_teams-noel-java17-identify-repos.png"
-Content-Type: image/png
-
-< {{fileDirectory}}/2026-09-25_teams-noel-java17-identify-repos.png
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="images"; filename="2026-09-25_jira-c175021a-3316-cases-filled.png"
-Content-Type: image/png
-
-< {{fileDirectory}}/2026-09-25_jira-c175021a-3316-cases-filled.png
+< {{fixtures}}/github-repo.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+---
+
+### 2. Загрузка ТРЁХ файлов
+POST {{baseUrl}}/api/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="github-repo.png"
+Content-Type: image/png
+
+< {{fixtures}}/github-repo.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="teams-chat.png"
+Content-Type: image/png
+
+< {{fixtures}}/teams-chat.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="jira-ticket.png"
+Content-Type: image/png
+
+< {{fixtures}}/jira-ticket.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+---
+
+### 3. Загрузка "сломанного" файла (для проверки валидатора)
+POST {{baseUrl}}/api/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZuBad
+
+------WebKitFormBoundary7MA4YWxkTrZuBad
+Content-Disposition: form-data; name="images"; filename="invalid.txt"
+Content-Type: text/plain
+
+< {{fixtures}}/invalid.txt
+------WebKitFormBoundary7MA4YWxkTrZuBad--

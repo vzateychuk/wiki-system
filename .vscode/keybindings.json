@@ -1,0 +1,7 @@
+[
+  {
+    "key": "ctrl+shift+slash",
+    "command": "editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+  }
+]
