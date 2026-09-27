@@ -1,5 +1,6 @@
 import { SagaContext, SagaDefinition } from '../fsm/index.js';
 import { JevService } from './jev.service.js';
+import { JevAttributeResolver } from './attribute.resolver.js';
 import { runOcr } from '../utils/ocr.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -13,6 +14,7 @@ export interface UploadContext extends SagaContext {
   confidence?: number;
   probabilities?: Partial<Record<ImageCategory, number>>;
   savedImagePath?: string;
+  contextKey?: string | null;
 }
 
 const WIKI_IMAGES_SUBDIR = process.env.WIKI_IMAGES_SUBDIR || 'raw/images';
@@ -27,10 +29,14 @@ function createSteps(jevService: JevService, wikiBaseDir: string) {
   };
 
   const classifyStep = async (ctx: UploadContext): Promise<void> => {
-    const result = await jevService.getCategory(ctx.extractedText!);
-    ctx.category = result.category;
-    ctx.confidence = result.confidence;
-    ctx.probabilities = result.probabilities;
+    const resolver = new JevAttributeResolver();
+    const { response, contextKey } = await jevService.analyzeAndResolve(ctx.extractedText!, resolver);
+    
+    const imageTypeAnswer = response.answers?.image_type;
+    ctx.category = imageTypeAnswer?.choice ?? 'unknown';
+    ctx.confidence = imageTypeAnswer?.confidence;
+    ctx.probabilities = imageTypeAnswer?.probabilities;
+    ctx.contextKey = contextKey;
   };
 
   const saveStep = async (ctx: UploadContext): Promise<void> => {

@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:3000
 @fixtures = ../test/fixtures
+@calmWiki = /home/vez/work/calm-wiki/raw/images
 
 ---
 
@@ -8,10 +9,10 @@ POST {{baseUrl}}/api/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="images"; filename="github-repo.png"
+Content-Disposition: form-data; name="images"; filename="code.png"
 Content-Type: image/png
 
-< {{fixtures}}/github-repo.png
+< {{fixtures}}/code.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ---
@@ -49,3 +50,51 @@ Content-Type: text/plain
 
 < {{fixtures}}/invalid.txt
 ------WebKitFormBoundary7MA4YWxkTrZuBad--
+
+---
+
+### 4. Загрузка 8 файлов с кодом (dependency-list-refactor серия)
+POST {{baseUrl}}/api/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-01.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-01.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-02.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-02.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-03.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-03.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-04.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-04.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-05.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-05.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-06.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-06.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-07.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-07.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="dependency-list-refactor-08.png"
+Content-Type: image/png
+
+< {{calmWiki}}/2026-09-25_c175021a-3284-dependency-list-refactor-08.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

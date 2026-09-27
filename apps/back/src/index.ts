@@ -17,6 +17,7 @@ import { UploadController } from './controllers/upload.controller.js';
 import { uploadMiddleware } from './middlewares/upload.middleware.js';
 import { validateFileContent } from './middlewares/validate-file.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { JevAttributeResolver } from './services/attribute.resolver.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,7 +30,9 @@ if (!OPENROUTER_API_KEY) {
   process.exit(1);
 }
 
-const jevService = new JevService(OPENROUTER_API_KEY);
+
+const jevAttributeResolver = new JevAttributeResolver();
+const jevService = new JevService(jevAttributeResolver, OPENROUTER_API_KEY);
 const uploadProcessor = new UploadService(jevService, WIKI_BASE_DIR);
 const uploadController = new UploadController(uploadProcessor);
 
