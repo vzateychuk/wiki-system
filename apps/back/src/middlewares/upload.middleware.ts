@@ -2,16 +2,23 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-const UPLOAD_DIR = process.env.UPLOAD_TEMP_DIR || 'tmp/uploads/';
-const MAX_FILE_SIZE_MB = Number(process.env.UPLOAD_MAX_FILE_SIZE_MB) || 10;
-
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+function getUploadDir(): string {
+  return process.env.UPLOAD_TEMP_DIR || 'store/tmp/upload/';
 }
+
+function ensureUploadDir(): void {
+  const dir = getUploadDir();
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+const MAX_FILE_SIZE_MB = Number(process.env.UPLOAD_MAX_FILE_SIZE_MB) || 10;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, UPLOAD_DIR);
+    ensureUploadDir();
+    cb(null, getUploadDir());
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -27,7 +34,7 @@ export const uploadMiddleware = multer({
   },
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    
+
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
