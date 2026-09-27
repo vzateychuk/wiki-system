@@ -1,3 +1,10 @@
+# 
+tmp/
+*.png
+*.jpg
+*.jpeg
+.envs/
+
 # Logs
 logs
 *.log

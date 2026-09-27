@@ -1,0 +1,14 @@
+### Переменные окружения
+@baseUrl = http://localhost:3000
+@fileDirectory = ./upload
+
+### Загрузка скриншота через multipart/form-data
+POST {{baseUrl}}/api/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="screenshot.png"
+Content-Type: image/png
+
+< {{fileDirectory}}/screenshot.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

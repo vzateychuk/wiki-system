@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:front": "npm run dev --workspace=apps/front"
+    "dev:front": "npm run dev --workspace=apps/front",
+    "dev:back": "npm run dev --workspace=apps/back"
   },
   "keywords": [],
   "author": "",

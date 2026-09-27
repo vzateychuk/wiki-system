@@ -5,15 +5,28 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Backend",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "tsx",
+        "watch"
+      ],
       "args": [
         "${workspaceFolder}/apps/back/src/index.ts"
       ],
       "cwd": "${workspaceFolder}/apps/back",
-      "internalConsoleOptions": "openOnSessionStart",
+      "sourceMaps": true,
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
       "skipFiles": [
-        "<node_internals>/**"
-      ]
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/apps/back/node_modules/**/*.js"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "envFile": "${workspaceFolder}/.envs/dev.env"
     }
   ]
 }
