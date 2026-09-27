@@ -1,7 +1,7 @@
 import { SagaContext, SagaDefinition } from '../fsm/index.js';
 import { JevService } from './jev.service.js';
-import { JevAttributeResolver } from './attribute.resolver.js';
 import { runOcr } from '../utils/ocr.js';
+import { preprocessImageForOcr } from '../utils/image-preprocessor.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { ImageCategory } from '../types/jev.types.js';
@@ -9,6 +9,7 @@ import type { ImageCategory } from '../types/jev.types.js';
 export interface UploadContext extends SagaContext {
   filePath: string;
   originalName: string;
+  ocrImagePath?: string;
   extractedText?: string;
   category?: ImageCategory;
   confidence?: number;
@@ -19,18 +20,43 @@ export interface UploadContext extends SagaContext {
 
 const WIKI_IMAGES_SUBDIR = process.env.WIKI_IMAGES_SUBDIR || 'raw/images';
 
+async function cleanupTemporaryFiles(ctx: UploadContext): Promise<void> {
+  const paths = new Set([ctx.filePath, ctx.ocrImagePath].filter(
+    (filePath): filePath is string => Boolean(filePath)
+  ));
+
+  await Promise.all([...paths].map(async (filePath) => {
+    try {
+      await fs.unlink(filePath);
+      console.log(`[UploadSaga] Cleaned up temp file: ${filePath}`);
+    } catch (error: unknown) {
+      const code = error instanceof Error && 'code' in error ? error.code : undefined;
+      if (code !== 'ENOENT') {
+        console.warn(`[UploadSaga] Failed to cleanup temp file ${filePath}:`, error);
+      }
+    }
+  }));
+}
+
 function createSteps(jevService: JevService, wikiBaseDir: string) {
   const preprocessStep = async (ctx: UploadContext): Promise<void> => {
-    // Stub for pre-processing
+    try {
+      ctx.ocrImagePath = await preprocessImageForOcr(ctx.filePath);
+    } catch (error) {
+      console.warn(
+        `[UploadSaga] OCR preprocessing failed for ${ctx.originalName}; using original image:`,
+        error
+      );
+      ctx.ocrImagePath = ctx.filePath;
+    }
   };
 
   const ocrStep = async (ctx: UploadContext): Promise<void> => {
-    ctx.extractedText = await runOcr(ctx.filePath);
+    ctx.extractedText = await runOcr(ctx.ocrImagePath ?? ctx.filePath);
   };
 
   const classifyStep = async (ctx: UploadContext): Promise<void> => {
-    const resolver = new JevAttributeResolver();
-    const { response, contextKey } = await jevService.analyzeAndResolve(ctx.extractedText!, resolver);
+    const { response, contextKey } = await jevService.analyzeAndResolve(ctx.extractedText!);
     
     const imageTypeAnswer = response.answers?.image_type;
     ctx.category = imageTypeAnswer?.choice ?? 'unknown';
@@ -60,12 +86,7 @@ function createSteps(jevService: JevService, wikiBaseDir: string) {
   };
 
   const cleanupStep = async (ctx: UploadContext): Promise<void> => {
-    try {
-      await fs.unlink(ctx.filePath);
-      console.log(`[UploadSaga] Cleaned up temp file: ${ctx.filePath}`);
-    } catch (err) {
-      console.warn(`[UploadSaga] Failed to cleanup temp file ${ctx.filePath}:`, err);
-    }
+    await cleanupTemporaryFiles(ctx);
   };  
 
   const postprocessStep = async (ctx: UploadContext): Promise<void> => {
@@ -93,6 +114,7 @@ export function createUploadSaga(
     ],
     onError: async (ctx, err, stepName) => {
       console.error(`[UploadSaga] Failed at step '${stepName}':`, err);
+      await cleanupTemporaryFiles(ctx);
     },
     onComplete: async (ctx) => {
       console.log(`[UploadSaga] Completed: ${ctx.originalName} -> ${ctx.category}`);

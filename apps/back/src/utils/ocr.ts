@@ -8,7 +8,7 @@ export async function runOcr(imagePath: string): Promise<string> {
     // execFile безопасен, так как не использует shell-интерпретатор
     const { stdout } = await execFilePromise(
       'tesseract',
-      [imagePath, 'stdout', '-l', 'eng', '--psm', '3'],
+      [imagePath, 'stdout', '-l', 'eng', '--psm', '6'],
       {
         // Увеличиваем буфер до 10 МБ для защиты от падений при больших текстах
         maxBuffer: 10 * 1024 * 1024, 

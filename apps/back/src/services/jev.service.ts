@@ -19,15 +19,15 @@ const IMAGE_CATEGORY: Record<ImageCategory, string> = {
 const FREE_TEXT_QUESTIONS = {
   file_path: {
     type: 'noul' as const,
-    instructions: 'Extract the active file name with its extension (e.g. filename.ext) visible in editor tabs or breadcrumbs. Do not include directory paths. Return NONE if not present.',
+    instructions: 'Extract the active file name or tab title (e.g., filename.ext). Note: OCR text may miss dots or underscores (like "filename_ext"). Correct OCR typos and return the reconstructed file name with extension. Return NONE if not present.',
   },
   browser_url: {
     type: 'noul' as const,
-    instructions: 'Extract the web URL visible in the browser address bar. Return NONE if not present.',
+    instructions: 'Extract the browser URL. Return NONE if not present.',
   },
   jira_ticket: {
     type: 'noul' as const,
-    instructions: 'Extract the Jira issue key or ticket identifier (a hyphenated code). Return NONE if not present.',
+    instructions: 'Extract the Jira issue key (e.g. C175021a-3284). Return NONE if not present.',
   },
 };
 
