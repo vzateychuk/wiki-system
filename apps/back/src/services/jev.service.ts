@@ -1,11 +1,10 @@
 import { 
   JevRequest, 
   JevDecisionResponse,
-  JevDecisionChoiceAnswer,
   ImageCategory 
 } from '../types/jev.types.js';
 
-const IMAGE_CRITERIA: Record<ImageCategory, string> = {
+const IMAGE_CATEGORY: Record<ImageCategory, string> = {
   github_repo: 'GitHub repository with file tree, branches, and commits',
   jira_issue: 'Jira or Atlassian task, issue page, ticket details, backlog board, or acceptance criteria',
   email_draft: 'Email draft, text document, or written report',
@@ -45,7 +44,7 @@ export class JevService {
         image_type: {
           type: 'choice',
           instructions: 'Identify the UI screenshot type',
-          criteria: IMAGE_CRITERIA,
+          criteria: IMAGE_CATEGORY,
         },
       },
     };
@@ -91,7 +90,7 @@ export class JevService {
    * Type Guard для проверки, что ответ действительно является одной из допустимых категорий.
    */
   private isValidCategory(category: unknown): category is ImageCategory {
-    return typeof category === 'string' && Object.hasOwn(IMAGE_CRITERIA, category);
+    return typeof category === 'string' && Object.hasOwn(IMAGE_CATEGORY, category);
   }
 
   /**
