@@ -53,18 +53,27 @@ function createSteps(jevService: JevService, wikiBaseDir: string) {
     ctx.savedImagePath = targetPath;
   };
 
+  const cleanupStep = async (ctx: UploadContext): Promise<void> => {
+    try {
+      await fs.unlink(ctx.filePath);
+      console.log(`[UploadSaga] Cleaned up temp file: ${ctx.filePath}`);
+    } catch (err) {
+      console.warn(`[UploadSaga] Failed to cleanup temp file ${ctx.filePath}:`, err);
+    }
+  };  
+
   const postprocessStep = async (ctx: UploadContext): Promise<void> => {
     // Stub for post-processing
   };
 
-  return [preprocessStep, ocrStep, classifyStep, saveStep, postprocessStep] as const;
+  return [preprocessStep, ocrStep, classifyStep, saveStep, cleanupStep, postprocessStep] as const;
 }
 
 export function createUploadSaga(
   jevService: JevService,
   wikiBaseDir: string
 ): SagaDefinition<UploadContext> {
-  const [preprocessStep, ocrStep, classifyStep, saveStep, postprocessStep] = createSteps(jevService, wikiBaseDir);
+  const [preprocessStep, ocrStep, classifyStep, saveStep, cleanupStep, postprocessStep] = createSteps(jevService, wikiBaseDir);
 
   return {
     name: 'upload',
@@ -73,6 +82,7 @@ export function createUploadSaga(
       { name: 'ocr', execute: ocrStep },
       { name: 'classify', execute: classifyStep },
       { name: 'save', execute: saveStep },
+      { name: 'cleanup', execute: cleanupStep },
       { name: 'postprocess', execute: postprocessStep },
     ],
     onError: async (ctx, err, stepName) => {
