@@ -7,8 +7,9 @@ import {
 
 const IMAGE_CRITERIA: Record<ImageCategory, string> = {
   github_repo: 'GitHub repository with file tree, branches, and commits',
+  jira_issue: 'Jira or Atlassian task, issue page, ticket details, backlog board, or acceptance criteria',
   email_draft: 'Email draft, text document, or written report',
-  web_dashboard: 'Web dashboard with tables, status cards, or web forms',
+  web_dashboard: 'Generic web dashboard, analytics page, status cards, or admin forms',
   system_notification: 'System notification panel or alert popups',
   messenger_chat: 'Chat or messaging application (Slack, Teams, Telegram)',
   ide_code: 'IDE code editor with source code file open',
@@ -17,12 +18,15 @@ const IMAGE_CRITERIA: Record<ImageCategory, string> = {
 };
 
 export class JevService {
-  private readonly apiUrl = 'https://openrouter.ai/api/alpha/decisions';
+  private readonly apiUrl: string;
+  private readonly model: string;
 
   constructor(private readonly apiKey: string) {
     if (!this.apiKey) {
       throw new Error('JevService requires an OpenRouter API key');
     }
+    this.apiUrl = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/alpha/decisions';
+    this.model = process.env.JEV_MODEL || 'typesafe/jev-1.13';
   }
 
   /**
@@ -35,7 +39,7 @@ export class JevService {
     probabilities?: Partial<Record<ImageCategory, number>>;
   }> {
     const requestBody: JevRequest = {
-      model: 'typesafe/jev-1.13',
+      model: this.model,
       state: ocrText,
       questions: {
         image_type: {

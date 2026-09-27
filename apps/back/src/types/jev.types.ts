@@ -2,6 +2,7 @@
 
 export type ImageCategory =
   | 'github_repo'
+  | 'jira_issue' // <-- для задач/тикетов Jira  
   | 'email_draft'
   | 'web_dashboard'
   | 'system_notification'

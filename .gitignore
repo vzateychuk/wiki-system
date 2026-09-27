@@ -4,6 +4,7 @@ tmp/
 *.jpg
 *.jpeg
 .envs/
+.idea/
 
 # Logs
 logs
